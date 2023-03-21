@@ -11,8 +11,9 @@ headers = { # Make sure to change the user agent every now and then! :)
 	'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"
 }
 
-def get_page(page_name):
-	print(f"[*] Getting page {page_name}...")
+def get_page(page_name, print_log=True):
+	if print_log:
+		print(f"[*] Getting page {page_name}...")
 	if len(page_name) > 127:
 		print("[*] Failed, page title is too long.")
 		return ''
@@ -32,7 +33,8 @@ def get_page(page_name):
 		print("PAGE CONTENTS WRITTEN TO errorpage.html")
 		exit()
 	elif req.status_code == 414:
-		print("[!] Page title too long and len() didn't catch it, unicode title?")
+		if print_log:
+			print("[!] Page title too long and len() didn't catch it, unicode title?")
 		return ''
 	else:
 		page_text = req.text
@@ -40,14 +42,16 @@ def get_page(page_name):
 	textarea=afterta[:afterta.find('</textarea>')]
 	return html.unescape(textarea)
 
-def edit(page_name, contents):
-	print(f"[*] Editing page {page_name}")
+def edit(page_name, contents, print_log=True):
+	if print_log:
+		print(f"[*] Editing page {page_name}")
 	if len(page_name) > 127:
 		print("[*] Failed, page title is too long.")
 		return
 	for thing in blacklist:
 		if page_name.startswith(thing):
-			print(f"[*] nvm, it's in the blacklist")
+			if print_log:
+				print(f"[*] nvm, it's in the blacklist")
 			return
 	full_domain = f'https://tikolu.net/edit/{page_name}'
 	timestamp = time.time()
@@ -60,13 +64,16 @@ def edit(page_name, contents):
 	except:
 		return
 	if req.status_code == 414:
-		print("[!] Page title too long and len() didn't catch it, unicode title?")
+		if print_log:
+			print("[!] Page title too long and len() didn't catch it, unicode title?")
 		return
 	json_req = req.json()
 	if json_req['status'] == "success":
-		print(f'[*] Edit success! ip: {json_req["ip"]} content size: {json_req["contentsize"]}')
+		if print_log:
+			print(f'[*] Edit success! ip: {json_req["ip"]} content size: {json_req["contentsize"]}')
 	elif json_req['status'] == "error" and json_req['cause'] == 'unmodified':
-		print(f'[*] Warn: Editing page made no changes.')
+		if print_log:
+			print(f'[*] Warn: Editing page made no changes.')
 	else:
 		print("[!] OH GOD SOMETHINGS WRONG pagewrite") # i could probably easily consolidate this into an Exception but that would take effort. bleh
 		print(f"Page name: {page_name}")
