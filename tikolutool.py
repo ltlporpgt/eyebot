@@ -1,4 +1,4 @@
-#functions to interface with tikolu.net/edit/ itself, e.g. getting page content, overwriting page content [if tikolu.net has good sec, this could instead be offloaded to a userscript]
+#functions to interface with tikolu.net/edit/ itself, e.g. getting page content, overwriting page content
 
 import requests
 import html
