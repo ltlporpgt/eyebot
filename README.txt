@@ -41,6 +41,7 @@ TIKOLUTOOL REQUIRES:
 The 'requests' library.
 
 ARCHIVETOOL REQUIRES:
+The 'tqdm' library
 An archive, either one you build yourself or one I provide.
 The links for mine are on /notahome and you can email me for a copy as well.
 
