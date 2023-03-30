@@ -14,16 +14,19 @@ headers = { # Make sure to change the user agent every now and then! :)
 def get_page(page_name, print_log=True):
 	if print_log:
 		print(f"[*] Getting page {page_name}...")
-	if len(page_name) > 127:
-		print("[*] Failed, page title is too long.")
+	if len(page_name) > 128:
+		if print_log:
+			print("[*] Failed, page title is too long.")
 		return ''
 	# page_name takes the form of 'chatroom' for tikolu.net/edit/chatroom
-	full_domain = f'https://tikolu.net/edit/{page_name}'
+	full_domain = f'https://tikolu.net/edit/.text/{page_name}' # Had no idea .text existed, thanks to .62.196 for letting me know
 	try:
 		req = requests.get(full_domain, headers=headers)
+	except KeyboardInterrupt:
+		exit()
 	except:
 		return ''
-	if req.status_code != 200 and req.status_code != 414:
+	if req.status_code != 200 and req.status_code != 414: # Unknown error code
 		print("[!] OH GOD SOMETHINGS WRONG pageread")
 		print(f"Page name:   {page_name}")
 		print(f"Status code: {req.status_code}")
@@ -32,20 +35,17 @@ def get_page(page_name, print_log=True):
 		f.close()
 		print("PAGE CONTENTS WRITTEN TO errorpage.html")
 		exit()
-	elif req.status_code == 414:
+	elif req.status_code == 414: # 414 URI Too Long
 		if print_log:
 			print("[!] Page title too long and len() didn't catch it, unicode title?")
 		return ''
-	else:
-		page_text = req.text
-	afterta=req.text[req.text.find(' disabled>')+len(' disabled>'):]
-	textarea=afterta[:afterta.find('</textarea>')]
-	return html.unescape(textarea)
+	else: # 200 OK
+		return req.text
 
 def edit(page_name, contents, print_log=True):
 	if print_log:
 		print(f"[*] Editing page {page_name}")
-	if len(page_name) > 127:
+	if len(page_name) > 128:
 		print("[*] Failed, page title is too long.")
 		return
 	for thing in blacklist:
